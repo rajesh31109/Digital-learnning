@@ -135,6 +135,8 @@ const AdminDashboard = () => {
   const [expandedChapter, setExpandedChapter] = useState<string | null>(null);
   const [uploadTopicId, setUploadTopicId] = useState<string | null>(null);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [uploadPptTopicId, setUploadPptTopicId] = useState<string | null>(null);
+  const [uploadPptFile, setUploadPptFile] = useState<File | null>(null);
 
   const resetAddFlow = () => {
     setAddStep(1);
@@ -188,20 +190,23 @@ const AdminDashboard = () => {
     setTopicTargetChapter(null);
   };
 
-  const handleAddMaterialToTopic = (topicId: string, file: File | null, title: string) => {
+  const handleAddMaterialToTopic = (topicId: string, file: File | null, title?: string, type: string = 'pdf') => {
     if (!topicId || !file) return;
     const id = `m_custom_${Date.now()}`;
     const topic = localTopics.find(t => t.id === topicId) || topics.find(t => t.id === topicId);
     const chapterId = topic?.chapterId || "";
     const url = URL.createObjectURL(file);
-    const mat = { id, chapterId, type: 'pdf', title: title || file.name, url, topicId };
+    const mat = { id, chapterId, type, title: title || file.name, url, topicId };
     studyMaterials.push(mat);
     setLocalMaterials([...localMaterials, mat]);
     // attach to topic materials
     const tgt = topics.find(t => t.id === topicId);
-    if (tgt) tgt.materials.push({ id, type: 'pdf', title: mat.title, url });
+    if (tgt) tgt.materials.push({ id, type, title: mat.title, url });
+    // clear both upload states to be safe
     setUploadTopicId(null);
     setUploadFile(null);
+    setUploadPptTopicId(null);
+    setUploadPptFile(null);
   };
 
 
@@ -1319,6 +1324,7 @@ const AdminDashboard = () => {
                                           </div>
                                           <div className="flex gap-2">
                                             <Button size="sm" onClick={() => { setUploadTopicId(tp.id); }}>Add Material</Button>
+                                            <Button size="sm" variant="outline" onClick={() => { setUploadPptTopicId(tp.id); }}>Add PPT</Button>
                                           </div>
                                         </div>
                                       ))}
@@ -1368,7 +1374,7 @@ const AdminDashboard = () => {
                           <Select onValueChange={(v) => setMaterialClass(v)} value={materialClass || undefined}>
                             <SelectTrigger className="h-10 w-full"><SelectValue placeholder="Select class" /></SelectTrigger>
                             <SelectContent>
-                              {classes.map(c => <SelectItem key={c.id} value={c.id}>{c.name} (Grade {c.grade})</SelectItem>)}
+                              {classes.filter(c => c.grade === 10).map(c => <SelectItem key={c.id} value={c.id}>{c.name} (Grade {c.grade})</SelectItem>)}
                             </SelectContent>
                           </Select>
                         </div>
@@ -1378,7 +1384,7 @@ const AdminDashboard = () => {
                           <Select onValueChange={(v) => setMaterialSubject(v)} value={materialSubject || undefined}>
                             <SelectTrigger className="h-10 w-full"><SelectValue placeholder="Select subject" /></SelectTrigger>
                             <SelectContent>
-                              {subjects.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+                              {subjects.filter(s => s.name.toLowerCase().includes("social") || s.id === "sub3").map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
                             </SelectContent>
                           </Select>
                         </div>
@@ -1403,7 +1409,7 @@ const AdminDashboard = () => {
                     {addStep === 2 && (
                       <div className="space-y-3">
                         <p className="text-sm font-medium">Enter chapter names</p>
-                        <div className="space-y-2">
+                        <div className="max-h-[60vh] overflow-y-auto space-y-2 pr-2">
                           {Array.from({ length: Math.max(0, parseInt(chapterCount || "0", 10)) }).map((_, i) => (
                             <div key={i} className="flex flex-col">
                               <label className="text-xs mb-1">Chapter {i + 1}</label>
@@ -1451,7 +1457,7 @@ const AdminDashboard = () => {
                   {topicAddStep === 2 && (
                     <div className="space-y-3">
                       <p className="text-sm">Enter topic names</p>
-                      <div className="space-y-2">
+                      <div className="max-h-[60vh] overflow-y-auto space-y-2 pr-2">
                         {Array.from({ length: Math.max(0, parseInt(topicCount || "0", 10)) }).map((_, i) => (
                           <div key={i} className="flex flex-col">
                             <label className="text-xs mb-1">Topic {i + 1}</label>
@@ -1495,6 +1501,32 @@ const AdminDashboard = () => {
               </DialogContent>
             </Dialog>
           )}
+
+            {/* Upload PPT dialog */}
+            {uploadPptTopicId && (
+              <Dialog open={!!uploadPptTopicId} onOpenChange={() => setUploadPptTopicId(null)}>
+                <DialogContent>
+                  <DialogHeader className="items-start">
+                    <DialogTitle>Upload PPT</DialogTitle>
+                    <div className="ml-auto">
+                      <Button variant="ghost" size="sm" onClick={() => setUploadPptTopicId(null)} className="h-8 w-8 p-0">✕</Button>
+                    </div>
+                  </DialogHeader>
+                  <div className="p-4 space-y-3">
+                    <div className="flex items-center gap-3">
+                      <input id="pptUpload" type="file" accept=".ppt,.pptx,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation" onChange={(e) => setUploadPptFile(e.target.files?.[0] || null)} />
+                      {uploadPptFile && (
+                        <div className="text-sm text-muted-foreground">{uploadPptFile.name}</div>
+                      )}
+                    </div>
+                    <div className="flex justify-end gap-2 mt-2">
+                      <Button onClick={() => { handleAddMaterialToTopic(uploadPptTopicId, uploadPptFile, undefined, 'ppt'); }} disabled={!uploadPptFile}>Submit</Button>
+                      <Button variant="ghost" onClick={() => setUploadPptTopicId(null)}>Cancel</Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            )}
 
         </TabsContent>
 

@@ -568,7 +568,7 @@ const TeacherDashboard = () => {
               <TabsTrigger value="overview" className="justify-start w-full data-[state=active]:bg-secondary data-[state=active]:text-primary hover:bg-secondary/50 rounded-lg px-4 py-2 transition-colors">Overview</TabsTrigger>
               <TabsTrigger value="chapters" className="justify-start w-full data-[state=active]:bg-secondary data-[state=active]:text-primary hover:bg-secondary/50 rounded-lg px-4 py-2 transition-colors">Chapters & Topics</TabsTrigger>
               <TabsTrigger value="students" className="justify-start w-full data-[state=active]:bg-secondary data-[state=active]:text-primary hover:bg-secondary/50 rounded-lg px-4 py-2 transition-colors">Students</TabsTrigger>
-              <TabsTrigger value="classstatus" className="justify-start w-full data-[state=active]:bg-secondary data-[state=active]:text-primary hover:bg-secondary/50 rounded-lg px-4 py-2 transition-colors">Class Status</TabsTrigger>
+              {/* Class Status tab removed per request */}
               <TabsTrigger value="leave" className="justify-start w-full data-[state=active]:bg-secondary data-[state=active]:text-primary hover:bg-secondary/50 rounded-lg px-4 py-2 transition-colors">Leave</TabsTrigger>
               <TabsTrigger value="cocurricular" className="justify-start w-full data-[state=active]:bg-secondary data-[state=active]:text-primary hover:bg-secondary/50 rounded-lg px-4 py-2 transition-colors">Co-Curricular</TabsTrigger>
           <TabsTrigger value="register" className="justify-start w-full data-[state=active]:bg-secondary data-[state=active]:text-primary hover:bg-secondary/50 rounded-lg px-4 py-2 transition-colors">Student Registration</TabsTrigger>
@@ -828,66 +828,7 @@ const TeacherDashboard = () => {
           </Card>
         </TabsContent>
 
-        {/* CLASS STATUS TAB */}
-        <TabsContent value="classstatus" className="space-y-4">
-          <Card className="shadow-card border-border">
-            <CardHeader>
-              <CardTitle className="font-display text-lg flex items-center gap-2">
-                <CalendarCheck className="w-5 h-5 text-primary" /> Class Status — {currentClass?.name}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-border bg-secondary">
-                      <th className="text-left p-3 font-medium text-muted-foreground">Date</th>
-                      <th className="text-left p-3 font-medium text-muted-foreground">Status</th>
-                      <th className="text-left p-3 font-medium text-muted-foreground">Reason</th>
-                      <th className="text-left p-3 font-medium text-muted-foreground">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {classStatusState.map(cs => (
-                      <tr key={cs.id} className="border-b border-border last:border-0">
-                        <td className="p-3 text-foreground">{cs.date}</td>
-                        <td className="p-3">
-                          <span className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full ${
-                            cs.status === "conducted" ? "bg-success-light text-success" : "bg-destructive/10 text-destructive"
-                          }`}>
-                            {cs.status === "conducted"
-                              ? <><CheckCircle2 className="w-3 h-3" /> Conducted</>
-                              : <><XCircle className="w-3 h-3" /> Cancelled</>
-                            }
-                          </span>
-                        </td>
-                        <td className="p-3 text-muted-foreground text-xs">{cs.reason || "—"}</td>
-                        <td className="p-3">
-                          <Select
-                            value={cs.status}
-                            onValueChange={(val) => {
-                              setClassStatusState(prev => prev.map(c =>
-                                c.id === cs.id ? { ...c, status: val as "conducted" | "cancelled" } : c
-                              ));
-                            }}
-                          >
-                            <SelectTrigger className="w-[130px] h-8 text-xs">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="conducted">Conducted</SelectItem>
-                              <SelectItem value="cancelled">Cancelled</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+        {/* Class Status tab and content removed from teacher dashboard */}
 
         {/* LEAVE TAB */}
         <TabsContent value="leave" className="space-y-4">

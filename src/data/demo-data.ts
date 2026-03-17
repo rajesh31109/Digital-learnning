@@ -28,6 +28,7 @@ export const classes = [
   { id: "c2", schoolId: "s2", name: "Class 9-B", section: "B", grade: 9, studentCount: 10 },
   { id: "c3", schoolId: "s1", name: "Class 6-A", section: "A", grade: 6, studentCount: 8 },
   { id: "c4", schoolId: "s2", name: "Class 7-A", section: "A", grade: 7, studentCount: 9 },
+  { id: "c5", schoolId: "s1", name: "Class 10-A", section: "A", grade: 10, studentCount: 12 },
 ];
 
 export const teachers = [
